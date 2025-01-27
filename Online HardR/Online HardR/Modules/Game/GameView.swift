@@ -25,11 +25,25 @@ struct GameView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
+                
                 GameSceneView(skView: skView, gameScene: gameScene).ignoresSafeArea()
                 
+                VStack {
+                    HStack {
+                        Text("")
+                    }
+                }
                 
             }
-        }
+        }.background(
+            ZStack {
+                Image(.checkBg)
+                    .resizable()
+                    .edgesIgnoringSafeArea(.all)
+                    .scaledToFill()
+            }
+            
+        )
         
     }
 }
