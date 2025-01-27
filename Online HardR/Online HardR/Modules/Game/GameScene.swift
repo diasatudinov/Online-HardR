@@ -15,8 +15,8 @@ class GameScene: SKScene {
     var selectedChecker: SKSpriteNode?
     var directionArrow: SKShapeNode?
     
-    var playerChecks: [String] = ["inst1", "inst2", "inst3", "inst4", "instEmpty","inst5", "inst6", "inst7"]
-    var opponentChecks: [String] = ["inst1", "inst2", "inst3", "inst4", "instEmpty","inst5", "inst6", "inst7"]
+    var playerChecks: [String] = ["inst1", "inst2", "inst3", "instEmpty", "inst4","inst5", "inst6", "inst7"]
+    var opponentChecks: [String] = ["music1", "music2", "music3", "musicEmpty", "music4","music5", "music6", "music7"]
     let redToWhiteShader = """
     void main() {
         vec2 uv = v_tex_coord;
@@ -25,7 +25,7 @@ class GameScene: SKScene {
         gl_FragColor = mix(startColor, endColor, uv.y);
     }
     """
-
+    
     // Градиент от синего к фиолетовому
     let blueToPurpleShader = """
     void main() {
@@ -36,15 +36,17 @@ class GameScene: SKScene {
     }
     """
     
-    var firstPlayerMove = true
-    var secondPlayerMove = false
+    var currentPlayer: Int = 1
+    var player1Checkers: [SKSpriteNode] = []
+    var player2Checkers: [SKSpriteNode] = []
+    var emptyCheckerName = "Empty"
     
     override func didMove(to view: SKView) {
         physicsWorld.gravity = .zero
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         physicsBody?.categoryBitMask = 1
         
-        backgroundColor = .systemGray
+        backgroundColor = .clear
         createBoard()
         addCheckers()
     }
@@ -69,8 +71,8 @@ class GameScene: SKScene {
                     let shader = SKShader(source: redToWhiteShader)
                     cell.shader = shader
                 }
-              //  cell.fillColor = (row + col) % 2 == 0 ? .systemBrown : .white
-               // cell.strokeColor = .clear
+                //  cell.fillColor = (row + col) % 2 == 0 ? .systemBrown : .white
+                // cell.strokeColor = .clear
                 
                 let xPosition = startX + CGFloat(col) * cellSize + cellSize / 2
                 let yPosition = startY + CGFloat(row) * cellSize + cellSize / 2
@@ -84,74 +86,75 @@ class GameScene: SKScene {
     func addCheckers() {
         let startX = 0.0
         let startY = 0.0
-
+        
         // Верхний ряд (красные шашки, игрок-соперник)
-        let topRow = boardSize - 1
+        // Добавляем шашки для игрока 1 (красные)
         for col in 0..<boardSize {
-            createChecker(row: topRow, col: col, imageName: opponentChecks[col % opponentChecks.count])
+            let checker = createChecker(row: 0, col: col, imageName: playerChecks[col], player: 1)
+            player1Checkers.append(checker)
         }
-
-        // Нижний ряд (синие шашки, игрок)
-        let bottomRow = 0
+        
+        // Добавляем шашки для игрока 2 (синие)
         for col in 0..<boardSize {
-            createChecker(row: bottomRow, col: col, imageName: playerChecks[col % playerChecks.count])
+            let checker = createChecker(row: boardSize - 1, col: col, imageName: opponentChecks[col], player: 2)
+            player2Checkers.append(checker)
         }
     }
     
-    func createChecker(row: Int, col: Int, imageName: String) {
+    func createChecker(row: Int, col: Int, imageName: String, player: Int) -> SKSpriteNode {
         let boardWidth = CGFloat(boardSize) * cellSize
         let boardHeight = CGFloat(boardSize) * cellSize
-
-        // Рассчитываем начальные координаты для центрирования доски
+        
         let startX = (UIScreen.main.bounds.width - boardWidth) / 2
         let startY = (UIScreen.main.bounds.height - boardHeight) / 2
-
+        
         let checker = SKSpriteNode(imageNamed: imageName)
         checker.size = CGSize(width: checkerRadius * 2, height: checkerRadius * 2)
-
+        
         let xPosition = startX + CGFloat(col) * cellSize + cellSize / 2
         let yPosition = startY + CGFloat(row) * cellSize + cellSize / 2
         checker.position = CGPoint(x: xPosition, y: yPosition)
-
+        
         checker.physicsBody = SKPhysicsBody(circleOfRadius: checkerRadius)
         checker.physicsBody?.isDynamic = true
         checker.physicsBody?.restitution = 0.5
         checker.physicsBody?.friction = 0.8
         checker.physicsBody?.affectedByGravity = false
         checker.physicsBody?.allowsRotation = false
-        checker.name = "checker"
-        checker.zPosition = 1 // Установите zPosition шашек выше клеток
-
+        checker.name = "checker" + imageName
+        checker.zPosition = 1
+        checker.userData = ["player": player] // Добавляем информацию о владельце шашки
+        
         addChild(checker)
+        return checker
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         
-        // Check if the node at the touch location is an SKSpriteNode with the name "checker"
-        if let node = nodes(at: location).first(where: { $0.name == "checker" }) as? SKSpriteNode {
-            if node.physicsBody?.velocity == CGVectorMake(0, 0) {
+        if let node = nodes(at: location).first(where: { $0.name?.contains("checker") == true }) as? SKSpriteNode {
+            // Проверяем, принадлежит ли шашка текущему игроку
+            if let player = node.userData?["player"] as? Int, player == currentPlayer {
                 selectedChecker = node
                 showArrow(at: location)
             }
         }
     }
-
+    
+    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, let arrow = directionArrow, let checker = selectedChecker else { return }
         let location = touch.location(in: self)
         let checkerPosition = checker.position
         
-        // Calculate the direction vector
         let dx = location.x - checkerPosition.x
         let dy = location.y - checkerPosition.y
         let distance = hypot(dx, dy)
         
-        // Set the arrow's rotation based on the swipe direction, with an adjustment of -π/2 radians
         let angle = atan2(dy, dx) - .pi / 2
         arrow.zRotation = angle
-        arrow.setScale(min(distance / 100, 2)) // Limit the arrow's maximum length
+        arrow.setScale(min(distance / 100, 2))
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -159,7 +162,6 @@ class GameScene: SKScene {
         let location = touch.location(in: self)
         let checkerPosition = checker.position
         
-        // Вычисляем вектор направления
         let dx = location.x - checkerPosition.x
         let dy = location.y - checkerPosition.y
         
@@ -170,6 +172,49 @@ class GameScene: SKScene {
         arrow.removeFromParent()
         directionArrow = nil
         selectedChecker = nil
+        
+        switchPlayer()
+    }
+    
+    func checkWinConditions(for player: Int) {
+        let opponentCheckers = player == 1 ? player2Checkers : player1Checkers
+
+        // Проверяем, осталась ли "пустая" фишка
+        if let emptyChecker = opponentCheckers.first(where: { $0.name?.contains(emptyCheckerName) == true }) {
+            // Если "пустая" фишка сбита, но остались другие фишки
+            if emptyChecker.parent == nil && opponentCheckers.contains(where: { $0.parent != nil && $0.name != emptyCheckerName }) {
+                gameOver(loser: player)
+                return
+            }
+        }
+
+        // Если все фишки противника сбиты
+        if opponentCheckers.allSatisfy({ $0.parent == nil }) {
+            gameOver(winner: player)
+        }
+    }
+    
+    func gameOver(winner: Int? = nil, loser: Int? = nil) {
+        var message: String
+
+        if let winner = winner {
+            message = "Игрок \(winner) выиграл!"
+        } else if let loser = loser {
+            let winner = loser == 1 ? 2 : 1
+            message = "Игрок \(loser) проиграл! Игрок \(winner) победил!"
+        } else {
+            message = "Игра завершилась!"
+        }
+
+        // Отображаем сообщение и останавливаем игру
+        let label = SKLabelNode(text: message)
+        label.fontSize = 24
+        label.fontColor = .white
+        label.position = CGPoint(x: frame.midX, y: frame.midY)
+        label.zPosition = 10
+        addChild(label)
+
+        isPaused = true
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -180,20 +225,65 @@ class GameScene: SKScene {
         let startY = (UIScreen.main.bounds.height - boardHeight) / 2
         let endX = startX + boardWidth
         let endY = startY + boardHeight
-
+        
         // Проверяем все шашки
         for node in children {
-            if let checker = node as? SKSpriteNode, checker.name == "checker" {
+            if let checker = node as? SKSpriteNode, checker.name?.contains("checker") == true {
                 if checker.position.x < startX ||
                     checker.position.x > endX ||
                     checker.position.y < startY ||
                     checker.position.y > endY {
+                    // Удаляем фишку из сцены
                     checker.removeFromParent()
+                    
+                    // Проверяем условия игры
+                    handleCheckerRemoval(checker: checker)
+                    
+                    return
+                        
                 }
             }
         }
+        
+        
     }
     
+    func handleCheckerRemoval(checker: SKSpriteNode) {
+        let isPlayer1Turn = currentPlayer == 1
+        var currentPlayerCheckers = isPlayer1Turn ? player1Checkers : player2Checkers
+        var opponentCheckers = isPlayer1Turn ? player2Checkers : player1Checkers
+        
+        // Проверяем условия победы
+        if opponentCheckers.isEmpty {
+            // Если у соперника не осталось фишек
+            if let lastChecker = checker.name, lastChecker.contains(emptyCheckerName) {
+                // Победа текущего игрока, если последняя фишка - пустая
+                gameOver(winner: currentPlayer)
+            } else {
+                // Проигрыш, если сбита не пустая фишка
+                gameOver(loser: currentPlayer)
+            }
+        }
+        // Проверяем, была ли выбита пустая фишка
+        if let checkerName = checker.name, checkerName.contains(emptyCheckerName) {
+            if currentPlayerCheckers.contains(checker) {
+                // Игрок выбил свою пустую фишку - немедленный проигрыш
+                gameOver(loser: currentPlayer)
+                return
+            } else if opponentCheckers.contains(checker) {
+                // Игрок выбил пустую фишку соперника - немедленный проигрыш
+                gameOver(loser: currentPlayer)
+                return
+            }
+        }
+        
+        // Удаляем фишку из соответствующего массива
+        if let index = currentPlayerCheckers.firstIndex(of: checker) {
+            currentPlayerCheckers.remove(at: index)
+        } else if let index = opponentCheckers.firstIndex(of: checker) {
+            opponentCheckers.remove(at: index)
+        }
+    }
     
     func showArrow(at position: CGPoint) {
         // Если стрелка уже существует, удаляем её
@@ -215,5 +305,10 @@ class GameScene: SKScene {
         
         addChild(arrow)
         directionArrow = arrow
+    }
+    
+    func switchPlayer() {
+        currentPlayer = currentPlayer == 1 ? 2 : 1
+        print("Сейчас ход игрока \(currentPlayer)")
     }
 }
