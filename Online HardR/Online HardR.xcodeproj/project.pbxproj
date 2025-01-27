@@ -10,22 +10,9 @@
 		2B5EBA162D476E5B0003C297 /* Online HardR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Online HardR.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		2B5EBA282D476F670003C297 /* Exceptions for "Online HardR" folder in "Online HardR" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Online-HardR-Info.plist",
-			);
-			target = 2B5EBA152D476E5B0003C297 /* Online HardR */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2B5EBA182D476E5B0003C297 /* Online HardR */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				2B5EBA282D476F670003C297 /* Exceptions for "Online HardR" folder in "Online HardR" target */,
-			);
 			path = "Online HardR";
 			sourceTree = "<group>";
 		};
