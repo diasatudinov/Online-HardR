@@ -1,3 +1,11 @@
+//
+//  RulesView.swift
+//  Online HardR
+//
+//  Created by Dias Atudinov on 28.01.2025.
+//
+
+
 import SwiftUI
 
 struct RulesView: View {
@@ -15,12 +23,13 @@ struct RulesView: View {
                                 .resizable()
                                 .scaledToFit()
                             
-                            Text("The game features tiles numbered from 1 to 7 and two empty spaces. The goal is to arrange the numbers in ascending order, starting from the top-left corner. Players can move the tiles by sliding them into either of the two empty spaces. The objective is to complete the arrangement in the fewest moves or the shortest time. The two empty spaces add a strategic element, enabling more complex combinations. The game can be competitive, with players racing to finish first, or single-player, focusing on move or time optimization. The game ends when all numbers are in the correct sequence")
-                                .font(.system(size: DeviceInfo.shared.deviceType == .pad ? 24:12))
+                            Text("The goal of the game is to defeat your opponent by knocking out all of their pieces, with the last piece that must be knocked out being the one without a design. Players take turns moving their pieces across the board and knocking out the opponent's pieces. Each piece represents a musical element, such as an instrument or genre, except for one — the piece without a design, which is key to winning. The game ends when all of the opponent's pieces are knocked out, and the last piece to be knocked out must be the one without a design.")
+                                .font(.system(size: DeviceInfo.shared.deviceType == .pad ? 24:13, weight: .bold))
+                                .foregroundColor(.darkPurple)
                                 .multilineTextAlignment(.center)
                                 .textCase(.uppercase)
                                 .frame(width: DeviceInfo.shared.deviceType == .pad ? 600:330)
-                                .padding(.top, 20)
+                                .padding(.top, 60)
                             
                         }.frame(height: geometry.size.height * 0.87)
                         Spacer()
@@ -33,7 +42,7 @@ struct RulesView: View {
                         Button {
                             presentationMode.wrappedValue.dismiss()
                         } label: {
-                            Image(.backBtn)
+                            Image(.back)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 50)
@@ -43,16 +52,11 @@ struct RulesView: View {
                     Spacer()
                 }.padding(20)
                 
-            }
-            .background(
-                ZStack {
-                    Color.appSkyBlue
-                    
-                    Image(.bg1)
-                        .resizable()
-                        .scaledToFill()
-                }.edgesIgnoringSafeArea(.all)
-                
+            }.background(
+                Image(.menuBg)
+                    .resizable()
+                    .ignoresSafeArea()
+                    .scaledToFill()
             )
         }
     }
