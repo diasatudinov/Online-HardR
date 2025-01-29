@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "p2Go.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
