@@ -108,10 +108,10 @@ struct MenuView: View {
             //                }
             //            }
             .fullScreenCover(isPresented: $showAIGame) {
-                //TrainingView(viewModel: trainingVM, settingsVM: settingsVM)
+                GameView(shopVM: shopVM, opponentState: .ai)
             }
             .fullScreenCover(isPresented: $showPlayerGame) {
-                GameView(shopVM: shopVM)
+                GameView(shopVM: shopVM, opponentState: .player)
             }
             .fullScreenCover(isPresented: $showHowToPlay) {
                 RulesView()

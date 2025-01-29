@@ -8,6 +8,10 @@
 
 import SpriteKit
 
+enum GameState {
+    case ai, player
+}
+
 class GameScene: SKScene {
     let boardSize = 8
     let cellSize: CGFloat = 40
@@ -20,6 +24,8 @@ class GameScene: SKScene {
     
     var currentPlayerHandle: ((_ currentPlayer: Int)->())?
     var winnerHandle: ((_ winner: Int)->())?
+    
+    var opponentState: GameState = .ai
     
     let redToWhiteShader = """
     void main() {
@@ -135,8 +141,15 @@ class GameScene: SKScene {
         if let node = nodes(at: location).first(where: { $0.name?.contains("checker") == true }) as? SKSpriteNode {
             // Проверяем, принадлежит ли шашка текущему игроку
             if let player = node.userData?["player"] as? Int, player == currentPlayer {
-                selectedChecker = node
-                showArrow(at: location)
+                if opponentState == .ai {
+                    if player == 1 {
+                        selectedChecker = node
+                        showArrow(at: location)
+                    }
+                } else {
+                    selectedChecker = node
+                    showArrow(at: location)
+                }
             }
         }
     }
@@ -308,6 +321,45 @@ class GameScene: SKScene {
         currentPlayer = currentPlayer == 1 ? 2 : 1
         currentPlayerHandle?(currentPlayer)
         print("Сейчас ход игрока \(currentPlayer)")
+        if opponentState == .ai {
+            if currentPlayer == 2 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.aiMove()
+                }
+            }
+        }
+    }
+    
+    func aiMove() {
+        // Фильтруем шашки, которые всё ещё находятся на доске
+        let activeAIcheckers = player2Checkers.filter { $0.parent != nil }
+        let activePlayerCheckers = player1Checkers.filter { $0.parent != nil }
+        
+        guard !activeAIcheckers.isEmpty, !activePlayerCheckers.isEmpty else { return }
+        
+        // Выбираем случайную шашку ИИ
+        let randomChecker = activeAIcheckers.randomElement()!
+        
+        // Выбираем случайную шашку игрока
+        let targetChecker = activePlayerCheckers.randomElement()!
+        
+        // Вычисляем вектор направления к цели
+        let dx = targetChecker.position.x - randomChecker.position.x
+        let dy = targetChecker.position.y - randomChecker.position.y
+        let magnitude = sqrt(dx * dx + dy * dy)
+        
+        // Нормализуем вектор и умножаем на силу удара
+        let impulseStrength: CGFloat = 20.0
+        let impulse = CGVector(dx: (dx / magnitude) * impulseStrength,
+                               dy: (dy / magnitude) * impulseStrength)
+        
+        // Применяем импульс к шашке ИИ
+        randomChecker.physicsBody?.applyImpulse(impulse)
+        
+        // Завершаем ход через 0.5 секунды
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.switchPlayer()
+        }
     }
     
     func restartGame() {
@@ -329,7 +381,7 @@ class GameScene: SKScene {
 
         // 4. Сбрасываем текущего игрока
         
-        self.currentPlayer = 2
+        self.currentPlayer = 1
         self.currentPlayerHandle?(self.currentPlayer)
         
 
@@ -338,6 +390,13 @@ class GameScene: SKScene {
 
         // 6. Убираем паузу
         isPaused = false
+        
+        if opponentState == .ai {
+            if currentPlayer == 2 {
+                    self.aiMove()
+                
+            }
+        }
         
         print("Игра перезапущена!")
     }

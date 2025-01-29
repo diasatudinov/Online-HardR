@@ -23,8 +23,8 @@ struct GameView: View {
     @State private var isPause = false
     
     @State private var currentPlayer1 = true
-    
     @ObservedObject var shopVM: ShopViewModel
+    var opponentState: GameState
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -36,7 +36,8 @@ struct GameView: View {
                     opponentChecks: shopVM.getRandomItem(),
                     currentPlayer1: $currentPlayer1,
                     player1Score: $player1Score,
-                    player2Score: $player2Score
+                    player2Score: $player2Score,
+                    opponentState: opponentState
                 )
                 .ignoresSafeArea()
                 
@@ -110,5 +111,5 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(shopVM: ShopViewModel())
+    GameView(shopVM: ShopViewModel(), opponentState: .player)
 }

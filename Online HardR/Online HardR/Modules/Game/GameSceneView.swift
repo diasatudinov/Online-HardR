@@ -20,6 +20,7 @@ struct GameSceneView: UIViewRepresentable {
     @Binding var currentPlayer1: Bool
     @Binding var player1Score: Int
     @Binding var player2Score: Int
+    var opponentState: GameState
     
     func makeUIView(context: Context) -> SKView {
         let skView = SKView()
@@ -27,6 +28,7 @@ struct GameSceneView: UIViewRepresentable {
         scene.scaleMode = .resizeFill
         scene.playerChecks = playerChecks
         scene.opponentChecks = opponentChecks
+        scene.opponentState = opponentState
         scene.currentPlayerHandle = { currentPlayer in
             if currentPlayer == 1 {
                 self.currentPlayer1 = true
