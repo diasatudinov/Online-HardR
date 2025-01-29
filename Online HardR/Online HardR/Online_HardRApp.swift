@@ -11,7 +11,7 @@ import SwiftUI
 struct Online_HardRApp: App {
     var body: some Scene {
         WindowGroup {
-            GameView()
+            MenuView()
         }
     }
 }

@@ -15,8 +15,12 @@ class GameScene: SKScene {
     var selectedChecker: SKSpriteNode?
     var directionArrow: SKShapeNode?
     
-    var playerChecks: [String] = ["inst1", "inst2", "inst3", "instEmpty", "inst4","inst5", "inst6", "inst7"]
-    var opponentChecks: [String] = ["music1", "music2", "music3", "musicEmpty", "music4","music5", "music6", "music7"]
+    var playerChecks: [String] = []
+    var opponentChecks: [String] = []
+    
+    var currentPlayerHandle: ((_ currentPlayer: Int)->())?
+    var winnerHandle: ((_ winner: Int)->())?
+    
     let redToWhiteShader = """
     void main() {
         vec2 uv = v_tex_coord;
@@ -71,8 +75,6 @@ class GameScene: SKScene {
                     let shader = SKShader(source: redToWhiteShader)
                     cell.shader = shader
                 }
-                //  cell.fillColor = (row + col) % 2 == 0 ? .systemBrown : .white
-                // cell.strokeColor = .clear
                 
                 let xPosition = startX + CGFloat(col) * cellSize + cellSize / 2
                 let yPosition = startY + CGFloat(row) * cellSize + cellSize / 2
@@ -87,14 +89,11 @@ class GameScene: SKScene {
         let startX = 0.0
         let startY = 0.0
         
-        // Верхний ряд (красные шашки, игрок-соперник)
-        // Добавляем шашки для игрока 1 (красные)
         for col in 0..<boardSize {
             let checker = createChecker(row: 0, col: col, imageName: playerChecks[col], player: 1)
             player1Checkers.append(checker)
         }
         
-        // Добавляем шашки для игрока 2 (синие)
         for col in 0..<boardSize {
             let checker = createChecker(row: boardSize - 1, col: col, imageName: opponentChecks[col], player: 2)
             player2Checkers.append(checker)
@@ -123,7 +122,7 @@ class GameScene: SKScene {
         checker.physicsBody?.allowsRotation = false
         checker.name = "checker" + imageName
         checker.zPosition = 1
-        checker.userData = ["player": player] // Добавляем информацию о владельце шашки
+        checker.userData = ["player": player]
         
         addChild(checker)
         return checker
@@ -173,48 +172,41 @@ class GameScene: SKScene {
         directionArrow = nil
         selectedChecker = nil
         
-        switchPlayer()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5)  {
+            self.switchPlayer()
+        }
+        
     }
     
     func checkWinConditions(for player: Int) {
         let opponentCheckers = player == 1 ? player2Checkers : player1Checkers
+        let playerCheckers = player == 1 ? player1Checkers : player2Checkers
 
-        // Проверяем, осталась ли "пустая" фишка
-        if let emptyChecker = opponentCheckers.first(where: { $0.name?.contains(emptyCheckerName) == true }) {
-            // Если "пустая" фишка сбита, но остались другие фишки
-            if emptyChecker.parent == nil && opponentCheckers.contains(where: { $0.parent != nil && $0.name != emptyCheckerName }) {
-                gameOver(loser: player)
-                return
-            }
+        // 1. Проверяем, выбросил ли игрок свою "пустую" фишку → немедленный проигрыш
+        if playerCheckers.contains(where: { $0.parent == nil && $0.name?.contains(emptyCheckerName) == true }) {
+            gameOver(winner: player == 1 ? 2 : 1)
+            return
         }
 
-        // Если все фишки противника сбиты
+        // 2. Проверяем, выбил ли игрок "пустую" фишку противника до всех остальных → немедленный проигрыш
+        if let emptyChecker = opponentCheckers.first(where: { $0.name?.contains(emptyCheckerName) == true }),
+           emptyChecker.parent == nil,
+           opponentCheckers.contains(where: { $0.parent != nil && $0.name != emptyCheckerName }) {
+            gameOver(winner: player == 1 ? 2 : 1)
+            return
+        }
+
+        // 3. Победа, если все фишки противника сбиты и последней была "пустая" фишка
         if opponentCheckers.allSatisfy({ $0.parent == nil }) {
             gameOver(winner: player)
         }
     }
-    
-    func gameOver(winner: Int? = nil, loser: Int? = nil) {
-        var message: String
 
-        if let winner = winner {
-            message = "Игрок \(winner) выиграл!"
-        } else if let loser = loser {
-            let winner = loser == 1 ? 2 : 1
-            message = "Игрок \(loser) проиграл! Игрок \(winner) победил!"
-        } else {
-            message = "Игра завершилась!"
-        }
-
-        // Отображаем сообщение и останавливаем игру
-        let label = SKLabelNode(text: message)
-        label.fontSize = 24
-        label.fontColor = .white
-        label.position = CGPoint(x: frame.midX, y: frame.midY)
-        label.zPosition = 10
-        addChild(label)
-
-        isPaused = true
+    func gameOver(winner: Int) {
+            self.winnerHandle?(winner)
+        
+            self.restartGame()
+        
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -252,37 +244,42 @@ class GameScene: SKScene {
         let isPlayer1Turn = currentPlayer == 1
         var currentPlayerCheckers = isPlayer1Turn ? player1Checkers : player2Checkers
         var opponentCheckers = isPlayer1Turn ? player2Checkers : player1Checkers
-        
-        // Проверяем условия победы
-        if opponentCheckers.isEmpty {
-            // Если у соперника не осталось фишек
-            if let lastChecker = checker.name, lastChecker.contains(emptyCheckerName) {
-                // Победа текущего игрока, если последняя фишка - пустая
-                gameOver(winner: currentPlayer)
-            } else {
-                // Проигрыш, если сбита не пустая фишка
-                gameOver(loser: currentPlayer)
-            }
+
+        // Получаем имя фишки
+        guard let checkerName = checker.name else { return }
+
+        // 1. Если игрок выбил свою пустую фишку → проигрыш
+        if checkerName.contains(emptyCheckerName) && currentPlayerCheckers.contains(checker) {
+            gameOver(winner: isPlayer1Turn ? 2 : 1)
+            return
         }
-        // Проверяем, была ли выбита пустая фишка
-        if let checkerName = checker.name, checkerName.contains(emptyCheckerName) {
-            if currentPlayerCheckers.contains(checker) {
-                // Игрок выбил свою пустую фишку - немедленный проигрыш
-                gameOver(loser: currentPlayer)
-                return
-            } else if opponentCheckers.contains(checker) {
-                // Игрок выбил пустую фишку соперника - немедленный проигрыш
-                gameOver(loser: currentPlayer)
+
+        // 2. Если игрок выбил пустую фишку соперника раньше времени → проигрыш
+        if checkerName.contains(emptyCheckerName) && opponentCheckers.contains(checker) {
+            let remainingOpponentCheckers = opponentCheckers.filter { $0.parent != nil && !$0.name!.contains(emptyCheckerName) }
+            
+            if !remainingOpponentCheckers.isEmpty {
+                gameOver(winner: isPlayer1Turn ? 2 : 1)
                 return
             }
         }
-        
+
+
         // Удаляем фишку из соответствующего массива
         if let index = currentPlayerCheckers.firstIndex(of: checker) {
             currentPlayerCheckers.remove(at: index)
         } else if let index = opponentCheckers.firstIndex(of: checker) {
             opponentCheckers.remove(at: index)
         }
+
+        // Проверяем, остались ли у противника фишки кроме пустой
+        let remainingOpponentCheckers = opponentCheckers.filter { $0.parent != nil }
+
+        // Если у противника не осталось фишек → победа
+        if remainingOpponentCheckers.isEmpty {
+            gameOver(winner: currentPlayer)
+        }
+        
     }
     
     func showArrow(at position: CGPoint) {
@@ -309,6 +306,39 @@ class GameScene: SKScene {
     
     func switchPlayer() {
         currentPlayer = currentPlayer == 1 ? 2 : 1
+        currentPlayerHandle?(currentPlayer)
         print("Сейчас ход игрока \(currentPlayer)")
+    }
+    
+    func restartGame() {
+        // 1. Удаляем всех шашки со сцены
+        for checker in player1Checkers + player2Checkers {
+            checker.removeFromParent()
+        }
+        
+        // 2. Очищаем массивы шашек
+        player1Checkers.removeAll()
+        player2Checkers.removeAll()
+        
+        // 3. Удаляем все текстовые надписи (например, "Игрок X выиграл!")
+        for node in children {
+            if let label = node as? SKLabelNode {
+                label.removeFromParent()
+            }
+        }
+
+        // 4. Сбрасываем текущего игрока
+        
+        self.currentPlayer = 2
+        self.currentPlayerHandle?(self.currentPlayer)
+        
+
+        // 5. Добавляем шашки заново
+        addCheckers()
+
+        // 6. Убираем паузу
+        isPaused = false
+        
+        print("Игра перезапущена!")
     }
 }
