@@ -27,6 +27,14 @@ class ShopViewModel: ObservableObject {
     
     private let userDefaultsTeamKey = "boughtItem"
     
+    func getRandomItem() -> [String] {
+        if let currentItem = currentItem {
+            let availableItems = shopItems.filter { $0.name != currentItem.name }
+            return availableItems.randomElement()?.images ?? []
+        }
+        return []
+    }
+    
     func saveTeam() {
         if let currentItem = currentItem {
             if let encodedData = try? JSONEncoder().encode(currentItem) {
