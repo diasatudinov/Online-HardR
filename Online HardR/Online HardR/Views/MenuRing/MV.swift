@@ -14,8 +14,7 @@ struct MV: View {
     @State private var showHowToPlay = false
     @State private var showSettings = false
     
-     @StateObject var shopVM = SVM()
-    // @StateObject var gameVM = GameViewModel()
+    @StateObject var shopVM = SVM()
     @StateObject var settingsVM = SM()
     
     var body: some View {
@@ -95,18 +94,18 @@ struct MV: View {
                 }
                 
             )
-            //            .onAppear {
-            //                if settingsVM.musicEnabled {
-            //                    MusicPlayer.shared.playBackgroundMusic()
-            //                }
-            //            }
-            //            .onChange(of: settingsVM.musicEnabled) { enabled in
-            //                if enabled {
-            //                    MusicPlayer.shared.playBackgroundMusic()
-            //                } else {
-            //                    MusicPlayer.shared.stopBackgroundMusic()
-            //                }
-            //            }
+            .onAppear {
+                if settingsVM.musicEnabled {
+                    MusicPlayer.shared.playBackgroundMusic()
+                }
+            }
+            .onChange(of: settingsVM.musicEnabled) { enabled in
+                if enabled {
+                    MusicPlayer.shared.playBackgroundMusic()
+                } else {
+                    MusicPlayer.shared.stopBackgroundMusic()
+                }
+            }
             .fullScreenCover(isPresented: $showAIGame) {
                 GameView(shopVM: shopVM, opponentState: .ai)
             }

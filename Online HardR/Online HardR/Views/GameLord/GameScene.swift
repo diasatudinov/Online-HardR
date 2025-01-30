@@ -13,9 +13,12 @@ enum GameState {
 }
 
 class GameScene: SKScene {
+    
+    let settings = SM()
+    
     let boardSize = 8
-    let cellSize: CGFloat = 40
-    let checkerRadius: CGFloat = 15
+    let cellSize: CGFloat = DeviceCool.shared.deviceType == .pad ? 80:40
+    let checkerRadius: CGFloat = DeviceCool.shared.deviceType == .pad ? 30:15
     var selectedChecker: SKSpriteNode?
     var directionArrow: SKShapeNode?
     
@@ -177,10 +180,10 @@ class GameScene: SKScene {
         let dx = location.x - checkerPosition.x
         let dy = location.y - checkerPosition.y
         
-        // Применяем импульс к шашке
-        checker.physicsBody?.applyImpulse(CGVector(dx: dx / 10, dy: dy / 10))
-        
-        // Удаляем стрелку и сбрасываем выбор
+        checker.physicsBody?.applyImpulse(DeviceCool.shared.deviceType == .pad ? CGVector(dx: dx / 5, dy: dy / 5):CGVector(dx: dx / 10, dy: dy / 10))
+        if settings.soundEnabled {
+            playSound(named: "volleySound")
+        }
         arrow.removeFromParent()
         directionArrow = nil
         selectedChecker = nil
@@ -399,5 +402,10 @@ class GameScene: SKScene {
         }
         
         print("Игра перезапущена!")
+    }
+    
+    func playSound(named name: String) {
+        run(SKAction.playSoundFileNamed(name, waitForCompletion: false))
+        
     }
 }

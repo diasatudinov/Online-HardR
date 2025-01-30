@@ -1,3 +1,11 @@
+//
+//  WV.swift
+//  Online HardR
+//
+//  Created by Dias Atudinov on 30.01.2025.
+//
+
+
 import SwiftUI
 import WebKit
 
@@ -28,14 +36,13 @@ struct WV: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             if let url = webView.url {
                 
-                if Links.shared.finalURL == nil {
-                    Links.shared.finalURL = url
+                if AppLinks.shared.finalURL == nil {
+                    AppLinks.shared.finalURL = url
                 }
                
             }
         }
         
-        // This method gets called whenever the web view starts loading a new request
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             if let url = navigationAction.request.url {
                
@@ -73,7 +80,7 @@ struct WVWrap: View {
                         }
                 }
             } else {
-                if let url = Links.shared.finalURL {
+                if let url = AppLinks.shared.finalURL {
                     WV(initialURL: url)
                         .onAppear {
                             
@@ -97,10 +104,8 @@ struct WVWrap: View {
     private func checkFirstLaunch() {
         let hasLaunchedKey = "hasLaunchedBefore"
         if UserDefaults.standard.bool(forKey: hasLaunchedKey) {
-            // Not the first launch
             firstOpen = false
         } else {
-            // First launch
             firstOpen = true
             UserDefaults.standard.set(true, forKey: hasLaunchedKey)
         }
