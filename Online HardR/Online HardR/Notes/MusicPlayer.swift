@@ -1,3 +1,11 @@
+//
+//  MusicPlayer.swift
+//  Online HardR
+//
+//  Created by Dias Atudinov on 30.01.2025.
+//
+
+
 import AVFoundation
 
 class MusicPlayer {
@@ -5,11 +13,11 @@ class MusicPlayer {
     var audioPlayer: AVAudioPlayer?
 
     func playBackgroundMusic() {
-        guard let url = Bundle.main.url(forResource: "gameMusicTL", withExtension: "mp3") else { return }
+        guard let url = Bundle.main.url(forResource: "appMusic", withExtension: "mp3") else { return }
 
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.numberOfLoops = -1 // Infinite loop
+            audioPlayer?.numberOfLoops = -1
             audioPlayer?.play()
         } catch {
             print("Could not play background music: \(error)")
