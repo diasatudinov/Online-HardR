@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SplashScreen: View {
+struct SS: View {
     @State private var progress: Double = 0.0
     @State private var timer: Timer?
     
@@ -66,7 +66,7 @@ struct SplashScreen: View {
 }
 
 #Preview {
-    SplashScreen()
+    SS()
 }
 
 struct TextWithBorder: View {

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-class SettingsModel: ObservableObject {
+class SM: ObservableObject {
     @AppStorage("soundEnabled") var soundEnabled: Bool = true
     @AppStorage("musicEnabled") var musicEnabled: Bool = true
 }

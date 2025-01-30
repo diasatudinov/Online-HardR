@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class ShopViewModel: ObservableObject {
+class SVM: ObservableObject {
     @Published var shopItems: [Item] = [
         Item(name: "Creators of beauty", images: ["inst1", "inst2", "inst3", "instEmpty", "inst4","inst5", "inst6", "inst7"]),
         Item(name: "Musical heaven", images: ["music1", "music2", "music3", "musicEmpty", "music4","music5", "music6", "music7"]),

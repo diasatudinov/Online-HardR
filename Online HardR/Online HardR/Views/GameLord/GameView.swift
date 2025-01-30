@@ -23,7 +23,7 @@ struct GameView: View {
     @State private var isPause = false
     
     @State private var currentPlayer1 = true
-    @ObservedObject var shopVM: ShopViewModel
+    @ObservedObject var shopVM: SVM
     var opponentState: GameState
     var body: some View {
         GeometryReader { geometry in
@@ -111,5 +111,5 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView(shopVM: ShopViewModel(), opponentState: .player)
+    GameView(shopVM: SVM(), opponentState: .player)
 }

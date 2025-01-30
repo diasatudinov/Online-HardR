@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct ShopView: View {
+struct ShopV: View {
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var shopVM: ShopViewModel
+    @ObservedObject var shopVM: SVM
 
     var body: some View {
         ZStack {
@@ -23,7 +23,7 @@ struct ShopView: View {
                                 .resizable()
                                 .scaledToFit()
                             
-                        }.frame(height: DeviceInfo.shared.deviceType == .pad ? 100:50)
+                        }.frame(height: DeviceCool.shared.deviceType == .pad ? 100:50)
                         
                     }
                     Spacer()
@@ -41,7 +41,7 @@ struct ShopView: View {
                             
                             VStack {
                                 Text(item.name)
-                                    .font(.system(size: DeviceInfo.shared.deviceType == .pad ? 24:20, weight: .bold))
+                                    .font(.system(size: DeviceCool.shared.deviceType == .pad ? 24:20, weight: .bold))
                                     .foregroundStyle(.white)
                                     .frame(width: 120)
                                 ZStack {
@@ -70,17 +70,17 @@ struct ShopView: View {
                                                 Image(.tick)
                                                     .resizable()
                                                     .scaledToFit()
-                                                    .frame(height:DeviceInfo.shared.deviceType == .pad ? 100:50)
-                                            }.frame(width: DeviceInfo.shared.deviceType == .pad ? 300:150)
+                                                    .frame(height:DeviceCool.shared.deviceType == .pad ? 100:50)
+                                            }.frame(width: DeviceCool.shared.deviceType == .pad ? 300:150)
                                         }
                                     }
-                                }.frame(height: DeviceInfo.shared.deviceType == .pad ? 300:150)
+                                }.frame(height: DeviceCool.shared.deviceType == .pad ? 300:150)
                                 Spacer()
                             }//.padding()
                         }
                             
                             
-                        }.frame(height: DeviceInfo.shared.deviceType == .pad ? 550:290)
+                        }.frame(height: DeviceCool.shared.deviceType == .pad ? 550:290)
                     }
                 }
                 
@@ -99,5 +99,5 @@ struct ShopView: View {
 }
 
 #Preview {
-    ShopView(shopVM: ShopViewModel())
+    ShopV(shopVM: SVM())
 }

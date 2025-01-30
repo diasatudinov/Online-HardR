@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct RulesView: View {
+struct RuleV: View {
     @Environment(\.presentationMode) var presentationMode
     var body: some View {
         GeometryReader { geometry in
@@ -24,11 +24,11 @@ struct RulesView: View {
                                 .scaledToFit()
                             
                             Text("The goal of the game is to defeat your opponent by knocking out all of their pieces, with the last piece that must be knocked out being the one without a design. Players take turns moving their pieces across the board and knocking out the opponent's pieces. Each piece represents a musical element, such as an instrument or genre, except for one — the piece without a design, which is key to winning. The game ends when all of the opponent's pieces are knocked out, and the last piece to be knocked out must be the one without a design.")
-                                .font(.system(size: DeviceInfo.shared.deviceType == .pad ? 24:13, weight: .bold))
+                                .font(.system(size: DeviceCool.shared.deviceType == .pad ? 24:13, weight: .bold))
                                 .foregroundColor(.darkPurple)
                                 .multilineTextAlignment(.center)
                                 .textCase(.uppercase)
-                                .frame(width: DeviceInfo.shared.deviceType == .pad ? 600:330)
+                                .frame(width: DeviceCool.shared.deviceType == .pad ? 600:330)
                                 .padding(.top, 60)
                             
                         }.frame(height: geometry.size.height * 0.87)
@@ -63,5 +63,5 @@ struct RulesView: View {
 }
 
 #Preview {
-    RulesView()
+    RuleV()
 }

@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-struct MenuView: View {
+struct MV: View {
     @State private var showAIGame = false
     @State private var showPlayerGame = false
     @State private var showShop = false
     @State private var showHowToPlay = false
     @State private var showSettings = false
     
-     @StateObject var shopVM = ShopViewModel()
+     @StateObject var shopVM = SVM()
     // @StateObject var gameVM = GameViewModel()
-    @StateObject var settingsVM = SettingsModel()
+    @StateObject var settingsVM = SM()
     
     var body: some View {
         
@@ -28,7 +28,7 @@ struct MenuView: View {
                         Image(.progressIcon)
                             .resizable()
                             .scaledToFit()
-                            .frame(height: DeviceInfo.shared.deviceType == .pad ? 140:70)
+                            .frame(height: DeviceCool.shared.deviceType == .pad ? 140:70)
                         
                         Spacer()
                         
@@ -38,7 +38,7 @@ struct MenuView: View {
                             Image(.settingsIcon)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: DeviceInfo.shared.deviceType == .pad ? 140:70)
+                                .frame(height: DeviceCool.shared.deviceType == .pad ? 140:70)
                         }
                     }
                     Spacer()
@@ -50,7 +50,7 @@ struct MenuView: View {
                             Image(.playAIIcon)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: DeviceInfo.shared.deviceType == .pad ?400:200)
+                                .frame(height: DeviceCool.shared.deviceType == .pad ?400:200)
                         }
                         
                         Button {
@@ -59,7 +59,7 @@ struct MenuView: View {
                             Image(.playIcon)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: DeviceInfo.shared.deviceType == .pad ? 400:200)
+                                .frame(height: DeviceCool.shared.deviceType == .pad ? 400:200)
                         }
                     }
                     
@@ -71,7 +71,7 @@ struct MenuView: View {
                             Image(.shopIcon)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: DeviceInfo.shared.deviceType == .pad ? 180:90)
+                                .frame(height: DeviceCool.shared.deviceType == .pad ? 180:90)
                         }
                         Spacer()
                         Button {
@@ -80,7 +80,7 @@ struct MenuView: View {
                             Image(.rulesIcon)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: DeviceInfo.shared.deviceType == .pad ? 180:90)
+                                .frame(height: DeviceCool.shared.deviceType == .pad ? 180:90)
                         }
                         
                     }
@@ -114,14 +114,14 @@ struct MenuView: View {
                 GameView(shopVM: shopVM, opponentState: .player)
             }
             .fullScreenCover(isPresented: $showHowToPlay) {
-                RulesView()
+                RuleV()
             }
             .fullScreenCover(isPresented: $showShop) {
-                ShopView(shopVM: shopVM)
+                ShopV(shopVM: shopVM)
                 
             }
             .fullScreenCover(isPresented: $showSettings) {
-                SettingsView(settings: settingsVM)
+                SV(settings: settingsVM)
                 
             }
             
@@ -133,5 +133,5 @@ struct MenuView: View {
 }
 
 #Preview {
-    MenuView()
+    MV()
 }

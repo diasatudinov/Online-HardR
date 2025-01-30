@@ -9,9 +9,9 @@
 import SwiftUI
 import StoreKit
 
-struct SettingsView: View {
+struct SV: View {
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject var settings: SettingsModel
+    @ObservedObject var settings: SM
     @State private var showChangeName = false
     @State private var currentTeamIcon: String = ""
     @State private var nickname: String = ""
@@ -40,7 +40,7 @@ struct SettingsView: View {
                                     Image(.sound)
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(height: DeviceInfo.shared.deviceType == .pad ? 140:90)
+                                        .frame(height: DeviceCool.shared.deviceType == .pad ? 140:90)
                                     
                                     Button {
                                         settings.musicEnabled = false
@@ -48,7 +48,7 @@ struct SettingsView: View {
                                         Image(.minus)
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(height: DeviceInfo.shared.deviceType == .pad ? 80:40)
+                                            .frame(height: DeviceCool.shared.deviceType == .pad ? 80:40)
                                     }
                                     
                                     
@@ -56,12 +56,12 @@ struct SettingsView: View {
                                             Image(.on)
                                                 .resizable()
                                                 .scaledToFit()
-                                                .frame(height: DeviceInfo.shared.deviceType == .pad ? 50:26)
+                                                .frame(height: DeviceCool.shared.deviceType == .pad ? 50:26)
                                         } else {
                                             Image(.off)
                                                 .resizable()
                                                 .scaledToFit()
-                                                .frame(height: DeviceInfo.shared.deviceType == .pad ? 50:26)
+                                                .frame(height: DeviceCool.shared.deviceType == .pad ? 50:26)
                                         }
                                     Button {
                                         settings.musicEnabled = true
@@ -69,7 +69,7 @@ struct SettingsView: View {
                                         Image(.plus)
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(height: DeviceInfo.shared.deviceType == .pad ? 80:40)
+                                            .frame(height: DeviceCool.shared.deviceType == .pad ? 80:40)
                                     }
                                 }
                                     
@@ -81,26 +81,26 @@ struct SettingsView: View {
                                     Image(.music)
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(height: DeviceInfo.shared.deviceType == .pad ? 140:90)
+                                        .frame(height: DeviceCool.shared.deviceType == .pad ? 140:90)
                                     Button {
                                         settings.soundEnabled = false
                                     } label: {
                                         Image(.minus)
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(height: DeviceInfo.shared.deviceType == .pad ? 80:40)
+                                            .frame(height: DeviceCool.shared.deviceType == .pad ? 80:40)
                                     }
                                     
                                     if settings.soundEnabled {
                                         Image(.on)
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(height: DeviceInfo.shared.deviceType == .pad ? 50:26)
+                                            .frame(height: DeviceCool.shared.deviceType == .pad ? 50:26)
                                     } else {
                                         Image(.off)
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(height: DeviceInfo.shared.deviceType == .pad ? 50:26)
+                                            .frame(height: DeviceCool.shared.deviceType == .pad ? 50:26)
                                     }
                                     
                                     
@@ -110,7 +110,7 @@ struct SettingsView: View {
                                         Image(.plus)
                                             .resizable()
                                             .scaledToFit()
-                                            .frame(height: DeviceInfo.shared.deviceType == .pad ? 80:40)
+                                            .frame(height: DeviceCool.shared.deviceType == .pad ? 80:40)
                                     }
                                 }
                             }
@@ -124,7 +124,7 @@ struct SettingsView: View {
                                 Image(.rateUs)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(height: DeviceInfo.shared.deviceType == .pad ? 240:120)
+                                    .frame(height: DeviceCool.shared.deviceType == .pad ? 240:120)
                                     
                             }.offset(y: 30)
                             
@@ -145,7 +145,7 @@ struct SettingsView: View {
                                     .resizable()
                                     .scaledToFit()
                                 
-                            }.frame(height: DeviceInfo.shared.deviceType == .pad ? 100:50)
+                            }.frame(height: DeviceCool.shared.deviceType == .pad ? 100:50)
                             
                         }
                         Spacer()
@@ -175,5 +175,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(settings: SettingsModel())
+    SV(settings: SM())
 }

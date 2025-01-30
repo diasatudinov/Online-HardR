@@ -8,8 +8,8 @@
 
 import UIKit
 
-class DeviceInfo {
-    static let shared = DeviceInfo()
+class DeviceCool {
+    static let shared = DeviceCool()
     
     var deviceType: UIUserInterfaceIdiom
     
