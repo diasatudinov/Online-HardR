@@ -1,10 +1,3 @@
-//
-//  MenuView.swift
-//  Online HardR
-//
-//  Created by Dias Atudinov on 29.01.2025.
-//
-
 import SwiftUI
 
 struct MV: View {
