@@ -1,11 +1,3 @@
-//
-//  Network.swift
-//  Online HardR
-//
-//  Created by Dias Atudinov on 30.01.2025.
-//
-
-
 import Foundation
 
 class Network: NSObject, URLSessionTaskDelegate {

@@ -1,11 +1,3 @@
-//
-//  AppLinks.swift
-//  Online HardR
-//
-//  Created by Dias Atudinov on 30.01.2025.
-//
-
-
 import SwiftUI
 
 class AppLinks {
