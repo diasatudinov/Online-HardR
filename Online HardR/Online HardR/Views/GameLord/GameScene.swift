@@ -180,7 +180,7 @@ class GameScene: SKScene {
         directionArrow = nil
         selectedChecker = nil
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5)  {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1)  {
             self.switchPlayer()
         }
         
@@ -317,8 +317,9 @@ class GameScene: SKScene {
         currentPlayerHandle?(currentPlayer)
         print("Сейчас ход игрока \(currentPlayer)")
         if opponentState == .ai {
-            if currentPlayer == 2 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if self.currentPlayer == 2 {
                     self.aiMove()
                 }
             }
